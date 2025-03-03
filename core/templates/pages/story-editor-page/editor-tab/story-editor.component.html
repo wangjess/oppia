@@ -74,26 +74,18 @@
                         [oppiaFocusOn]="metaTagInputField">
               </textarea>
             </div>
-            <div class="story-url-fragment">
-              <label for="storyUrlFragment" class="form-heading">Url Fragment*</label>
-              <input id="storyUrlFragment" type="text" class="form-control e2e-test-story-url-fragment-field"
-                     [(ngModel)]="editableUrlFragment" (blur)="updateStoryUrlFragment(editableUrlFragment)"
-                     [ngModelOptions]="{standalone: true}"
-                     placeholder="Enter url fragment for the story." maxlength="{{ MAX_CHARS_IN_STORY_URL_FRAGMENT }}" ng-trim="true"
-                     [ngClass]="{'is-invalid': storyUrlFragmentExists}">
-              <span class="oppia-input-box-subtitle">
-                <em>
-                  The story URL fragment is used to uniquely access the story viewer page. It should consist of one or more hyphen-separated words, all in lowercase, with at most {{ MAX_CHARS_IN_STORY_URL_FRAGMENT }} characters in total and must be unique across the topic. Please use meaningful keywords, and avoid using words like "and", "of", or "the".
-                  This story can be accessed at the following URL:<br>
-                  {{ hostname }}/learn/{{ getClassroomUrlFragment() }}/{{ getTopicUrlFragment() }}/story/{{ editableUrlFragment }}
-                </em>
-              </span>
-              <div *ngIf="storyUrlFragmentExists" class="oppia-input-box-subtitle text-danger">
-                <em>
-                  This story URL fragment already exists.
-                </em>
-              </div>
-            </div>
+            <url-fragment-editor-component label="Url Fragment"
+                                           placeholder="Enter the URL fragment for the story."
+                                           maxLength="{{ MAX_CHARS_IN_STORY_URL_FRAGMENT }}"
+                                           fragmentType="story"
+                                           [generatedUrlPrefix]="generatedUrlPrefix"
+                                           [fragmentIsDuplicate]="storyUrlFragmentExists"
+                                           [disabled]="false"
+                                           [(urlFragment)]="editableUrlFragment"
+                                           (urlFragmentChange)="onStoryEditorUrlFragmentChange($event)"
+                                           (blur)="updateStoryUrlFragment(editableUrlFragment)">
+            </url-fragment-editor-component>
+
             <div class="story-thumbnail e2e-test-story-thumbnail">
               <label class="form-heading">Thumbnail Image*</label>
               <oppia-thumbnail-uploader [filename]="story?.getThumbnailFilename()"
@@ -263,7 +255,7 @@
                 <span class="publish-upto-chapter-label">Publish up to Chapter ...</span>
                 <select [(ngModel)]="selectedChapterIndexInPublishUptoDropdown"
                         (ngModelChange)="updatePublishUptoChapterSelection(selectedChapterIndexInPublishUptoDropdown)"
-                        class="publish-upto-chapter-dropdown">
+                        class="publish-upto-chapter-dropdown e2e-test-publish-up-to-chapter-dropdown">
                   <option [value]="-1">None</option>
                   <option *ngFor="let node of linearNodesList;index as idx"
                           [disabled]="!chapterIsPublishable[idx]"
@@ -307,7 +299,7 @@
                     </td>
                     <td class="chapter-index"> {{ idx+1 }} </td>
                     <td class="e2e-test-chapter-title chapter-title">{{ node.getTitle() }}</td>
-                    <td class="chapter-status">
+                    <td class="chapter-status e2e-test-chapter-status">
                       {{ node.getStatus() }}
                     </td>
                     <td class="chapter-last-modified">
