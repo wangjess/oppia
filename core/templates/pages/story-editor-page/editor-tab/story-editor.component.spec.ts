@@ -16,23 +16,30 @@
  * @fileoverview Unit tests for the story editor component.
  */
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { UndoRedoService } from 'domain/editor/undo_redo/undo-redo.service';
-import { StoryUpdateService } from 'domain/story/story-update.service';
-import { WindowDimensionsService } from 'services/contextual/window-dimensions.service';
-import { StoryEditorNavigationService } from '../services/story-editor-navigation.service';
-import { StoryEditorComponent } from './story-editor.component';
-import { WindowRef } from 'services/contextual/window-ref.service';
-import { StoryEditorStateService } from '../services/story-editor-state.service';
-import { Story } from 'domain/story/story.model';
-import { NewChapterTitleModalComponent } from '../modal-templates/new-chapter-title-modal.component';
-import { DeleteChapterModalComponent } from '../modal-templates/delete-chapter-modal.component';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { StoryNode } from 'domain/story/story-node.model';
-import { PlatformFeatureService } from '../../../services/platform-feature.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {EventEmitter, NO_ERRORS_SCHEMA} from '@angular/core';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  waitForAsync,
+} from '@angular/core/testing';
+import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {UndoRedoService} from 'domain/editor/undo_redo/undo-redo.service';
+import {StoryUpdateService} from 'domain/story/story-update.service';
+import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
+import {StoryEditorNavigationService} from '../services/story-editor-navigation.service';
+import {StoryEditorComponent} from './story-editor.component';
+import {WindowRef} from 'services/contextual/window-ref.service';
+import {StoryEditorStateService} from '../services/story-editor-state.service';
+import {Story} from 'domain/story/story.model';
+import {NewChapterTitleModalComponent} from '../modal-templates/new-chapter-title-modal.component';
+import {DeleteChapterModalComponent} from '../modal-templates/delete-chapter-modal.component';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {StoryNode} from 'domain/story/story-node.model';
+import {PlatformFeatureService} from '../../../services/platform-feature.service';
+import {UrlFragmentEditorComponent} from '../../../components/url-fragment-editor/url-fragment-editor.component';
 
 class MockNgbModalRef {
   componentInstance: {
@@ -43,7 +50,7 @@ class MockNgbModalRef {
 class MockNgbModal {
   open() {
     return {
-      result: Promise.resolve()
+      result: Promise.resolve(),
     };
   }
 }
@@ -51,8 +58,8 @@ class MockNgbModal {
 class MockPlatformFeatureService {
   status = {
     SerialChapterLaunchCurriculumAdminView: {
-      isEnabled: false
-    }
+      isEnabled: false,
+    },
   };
 }
 
@@ -76,7 +83,8 @@ describe('Story Editor Component having three story nodes', () => {
       declarations: [
         StoryEditorComponent,
         NewChapterTitleModalComponent,
-        DeleteChapterModalComponent
+        DeleteChapterModalComponent,
+        UrlFragmentEditorComponent,
       ],
       providers: [
         WindowDimensionsService,
@@ -86,30 +94,27 @@ describe('Story Editor Component having three story nodes', () => {
         StoryEditorStateService,
         {
           provide: PlatformFeatureService,
-          useValue: mockPlatformFeatureService
+          useValue: mockPlatformFeatureService,
         },
         {
           provide: NgbModal,
-          useClass: MockNgbModal
-        }
+          useClass: MockNgbModal,
+        },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     });
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(
-      StoryEditorComponent);
+    fixture = TestBed.createComponent(StoryEditorComponent);
     component = fixture.componentInstance;
     ngbModal = TestBed.inject(NgbModal);
     windowDimensionsService = TestBed.inject(WindowDimensionsService);
-    storyEditorNavigationService = TestBed.inject(
-      StoryEditorNavigationService);
+    storyEditorNavigationService = TestBed.inject(StoryEditorNavigationService);
     undoRedoService = TestBed.inject(UndoRedoService);
     windowRef = TestBed.inject(WindowRef);
     storyUpdateService = TestBed.inject(StoryUpdateService);
     storyEditorStateService = TestBed.inject(StoryEditorStateService);
-
 
     let sampleStoryBackendObject = {
       id: 'sample_story_id',
@@ -133,11 +138,12 @@ describe('Story Editor Component having three story nodes', () => {
             exploration_id: null,
             outline_is_finalized: false,
             status: 'Published',
-            planned_publication_date_msecs: 30,
-            last_modified_msecs: 20,
-            first_publication_date_msecs: 10,
-            unpublishing_reason: 'Bad Content'
-          }, {
+            planned_publication_date_msecs: 30.0,
+            last_modified_msecs: 20.0,
+            first_publication_date_msecs: 10.0,
+            unpublishing_reason: 'Bad Content',
+          },
+          {
             id: 'node_2',
             title: 'Title 2',
             description: 'Description 2',
@@ -148,11 +154,12 @@ describe('Story Editor Component having three story nodes', () => {
             exploration_id: 'exp_1',
             outline_is_finalized: true,
             status: 'Ready To Publish',
-            planned_publication_date_msecs: 30,
-            last_modified_msecs: 20,
-            first_publication_date_msecs: 10,
-            unpublishing_reason: null
-          }, {
+            planned_publication_date_msecs: 30.0,
+            last_modified_msecs: 20.0,
+            first_publication_date_msecs: 10.0,
+            unpublishing_reason: null,
+          },
+          {
             id: 'node_3',
             title: 'Title 3',
             description: 'Description 3',
@@ -163,24 +170,28 @@ describe('Story Editor Component having three story nodes', () => {
             exploration_id: 'exp_3',
             outline_is_finalized: true,
             status: 'Draft',
-            planned_publication_date_msecs: 30,
-            last_modified_msecs: 20,
-            first_publication_date_msecs: 10,
-            unpublishing_reason: null
-          }],
-        next_node_id: 'node_3'
+            planned_publication_date_msecs: 30.0,
+            last_modified_msecs: 20.0,
+            first_publication_date_msecs: 10.0,
+            unpublishing_reason: null,
+          },
+        ],
+        next_node_id: 'node_3',
       },
-      language_code: 'en'
+      language_code: 'en',
     };
     story = Story.createFromBackendDict(sampleStoryBackendObject);
 
     spyOn(windowDimensionsService, 'isWindowNarrow').and.returnValue(true);
-    fetchSpy = spyOn(storyEditorStateService, 'getStory')
-      .and.returnValue(story);
+    fetchSpy = spyOn(storyEditorStateService, 'getStory').and.returnValue(
+      story
+    );
     spyOn(storyEditorStateService, 'getClassroomUrlFragment').and.returnValue(
-      'math');
+      'math'
+    );
     spyOn(storyEditorStateService, 'getTopicUrlFragment').and.returnValue(
-      'fractions');
+      'fractions'
+    );
     spyOn(storyEditorStateService, 'getTopicName').and.returnValue('addition');
     component.ngOnInit();
   });
@@ -192,8 +203,8 @@ describe('Story Editor Component having three story nodes', () => {
   it('should get status of Serial Chapter Launch Feature flag', () => {
     expect(component.isSerialChapterFeatureFlagEnabled()).toEqual(false);
 
-    mockPlatformFeatureService.
-      status.SerialChapterLaunchCurriculumAdminView.isEnabled = true;
+    mockPlatformFeatureService.status.SerialChapterLaunchCurriculumAdminView.isEnabled =
+      true;
     expect(component.isSerialChapterFeatureFlagEnabled()).toEqual(true);
   });
 
@@ -205,10 +216,11 @@ describe('Story Editor Component having three story nodes', () => {
 
   it('should get medium dateStyle locale date string', () => {
     const options = {
-      dateStyle: 'medium'
+      dateStyle: 'medium',
     } as Intl.DateTimeFormatOptions;
     expect(component.getMediumStyleLocaleDateString(1692144000000)).toEqual(
-      (new Date(1692144000000)).toLocaleDateString(undefined, options));
+      new Date(1692144000000).toLocaleDateString(undefined, options)
+    );
   });
 
   it('should disable drag and drop', () => {
@@ -225,10 +237,10 @@ describe('Story Editor Component having three story nodes', () => {
       outline_is_finalized: false,
       thumbnail_bg_color: '#a33f40',
       status: 'Published',
-      planned_publication_date_msecs: 100,
-      last_modified_msecs: 100,
-      first_publication_date_msecs: 200,
-      unpublishing_reason: null
+      planned_publication_date_msecs: 100.0,
+      last_modified_msecs: 100.0,
+      first_publication_date_msecs: 200.0,
+      unpublishing_reason: null,
     });
     expect(component.isDragAndDropDisabled(node)).toBeTrue();
 
@@ -239,60 +251,62 @@ describe('Story Editor Component having three story nodes', () => {
 
   it('should change list order', fakeAsync(() => {
     spyOn(storyUpdateService, 'rearrangeNodeInStory').and.stub();
-    component.linearNodesList = [StoryNode.createFromBackendDict({
-      id: 'node_1',
-      thumbnail_filename: 'image.png',
-      title: 'Title 1',
-      description: 'Description 1',
-      prerequisite_skill_ids: ['skill_1'],
-      acquired_skill_ids: ['skill_2'],
-      destination_node_ids: ['node_2'],
-      outline: 'Outline',
-      exploration_id: null,
-      outline_is_finalized: false,
-      thumbnail_bg_color: '#a33f40',
-      status: 'Published',
-      planned_publication_date_msecs: 100,
-      last_modified_msecs: 100,
-      first_publication_date_msecs: 200,
-      unpublishing_reason: null
-    }),
-    StoryNode.createFromBackendDict({
-      id: 'node_2',
-      thumbnail_filename: 'image.png',
-      title: 'Title 2',
-      description: 'Description 2',
-      prerequisite_skill_ids: ['skill_1'],
-      acquired_skill_ids: ['skill_2'],
-      destination_node_ids: ['node_2'],
-      outline: 'Outline',
-      exploration_id: null,
-      outline_is_finalized: false,
-      thumbnail_bg_color: '#a33f40',
-      status: 'Ready To Publish',
-      planned_publication_date_msecs: 100,
-      last_modified_msecs: 100,
-      first_publication_date_msecs: 200,
-      unpublishing_reason: null
-    }),
-    StoryNode.createFromBackendDict({
-      id: 'node_3',
-      thumbnail_filename: 'image.png',
-      title: 'Title 3',
-      description: 'Description 3',
-      prerequisite_skill_ids: ['skill_1'],
-      acquired_skill_ids: ['skill_2'],
-      destination_node_ids: ['node_2'],
-      outline: 'Outline',
-      exploration_id: null,
-      outline_is_finalized: false,
-      thumbnail_bg_color: '#a33f40',
-      status: 'Draft',
-      planned_publication_date_msecs: 100,
-      last_modified_msecs: 100,
-      first_publication_date_msecs: 200,
-      unpublishing_reason: null
-    })];
+    component.linearNodesList = [
+      StoryNode.createFromBackendDict({
+        id: 'node_1',
+        thumbnail_filename: 'image.png',
+        title: 'Title 1',
+        description: 'Description 1',
+        prerequisite_skill_ids: ['skill_1'],
+        acquired_skill_ids: ['skill_2'],
+        destination_node_ids: ['node_2'],
+        outline: 'Outline',
+        exploration_id: null,
+        outline_is_finalized: false,
+        thumbnail_bg_color: '#a33f40',
+        status: 'Published',
+        planned_publication_date_msecs: 100.0,
+        last_modified_msecs: 100.0,
+        first_publication_date_msecs: 200.0,
+        unpublishing_reason: null,
+      }),
+      StoryNode.createFromBackendDict({
+        id: 'node_2',
+        thumbnail_filename: 'image.png',
+        title: 'Title 2',
+        description: 'Description 2',
+        prerequisite_skill_ids: ['skill_1'],
+        acquired_skill_ids: ['skill_2'],
+        destination_node_ids: ['node_2'],
+        outline: 'Outline',
+        exploration_id: null,
+        outline_is_finalized: false,
+        thumbnail_bg_color: '#a33f40',
+        status: 'Ready To Publish',
+        planned_publication_date_msecs: 100.0,
+        last_modified_msecs: 100.0,
+        first_publication_date_msecs: 200.0,
+        unpublishing_reason: null,
+      }),
+      StoryNode.createFromBackendDict({
+        id: 'node_3',
+        thumbnail_filename: 'image.png',
+        title: 'Title 3',
+        description: 'Description 3',
+        prerequisite_skill_ids: ['skill_1'],
+        acquired_skill_ids: ['skill_2'],
+        destination_node_ids: ['node_2'],
+        outline: 'Outline',
+        exploration_id: null,
+        outline_is_finalized: false,
+        thumbnail_bg_color: '#a33f40',
+        status: 'Draft',
+        planned_publication_date_msecs: 100.0,
+        last_modified_msecs: 100.0,
+        first_publication_date_msecs: 200.0,
+        unpublishing_reason: null,
+      }),
+    ];
 
     const event1 = {
       previousIndex: 1,
@@ -437,124 +451,124 @@ describe('Story Editor Component having three story nodes', () => {
     expect(component.getTopicUrlFragment()).toEqual('fractions');
   });
 
-  it('should not open confirm or cancel modal if the initial node is' +
+  it(
+    'should not open confirm or cancel modal if the initial node is' +
       ' being deleted',
-  () => {
-    let modalSpy = spyOn(ngbModal, 'open');
-
-    component.deleteNode('node_2');
-
-    expect(modalSpy).not.toHaveBeenCalled();
-  });
-
-  it('should open confirm or cancel modal when a node is being deleted',
-    fakeAsync(() => {
-      let modalSpy = spyOn(ngbModal, 'open').and.returnValue({
-        result: Promise.resolve()
-      } as NgbModalRef);
-      let storyUpdateSpy = spyOn(
-        storyUpdateService, 'deleteStoryNode').and.stub();
-
-      component.deleteNode('node_1');
-      tick();
-
-      expect(storyUpdateSpy).toHaveBeenCalled();
-      expect(modalSpy).toHaveBeenCalled();
-    }));
-
-  it('should call storyUpdateService to add destination node id',
     () => {
-      class MockComponentInstance {
-        compoenentInstance!: {
-          nodeTitles: null;
-        };
-      }
+      let modalSpy = spyOn(ngbModal, 'open');
 
-      let modalSpy = spyOn(ngbModal, 'open').and.callFake(() => {
-        return ({
-          componentInstance: MockComponentInstance,
-          result: Promise.resolve()
-        }) as NgbModalRef;
-      });
+      component.deleteNode('node_2');
 
-      component.createNode();
+      expect(modalSpy).not.toHaveBeenCalled();
+    }
+  );
 
-      expect(modalSpy).toHaveBeenCalled();
+  it('should open confirm or cancel modal when a node is being deleted', fakeAsync(() => {
+    let modalSpy = spyOn(ngbModal, 'open').and.returnValue({
+      result: Promise.resolve(),
+    } as NgbModalRef);
+    let storyUpdateSpy = spyOn(
+      storyUpdateService,
+      'deleteStoryNode'
+    ).and.stub();
+
+    component.deleteNode('node_1');
+    tick();
+
+    expect(storyUpdateSpy).toHaveBeenCalled();
+    expect(modalSpy).toHaveBeenCalled();
+  }));
+
+  it('should call storyUpdateService to add destination node id', () => {
+    class MockComponentInstance {
+      compoenentInstance!: {
+        nodeTitles: null;
+      };
+    }
+
+    let modalSpy = spyOn(ngbModal, 'open').and.callFake(() => {
+      return {
+        componentInstance: MockComponentInstance,
+        result: Promise.resolve(),
+      } as NgbModalRef;
     });
 
-  it('should call storyUpdateService to add destination node id',
-    fakeAsync(() => {
-      class MockComponentInstance {
-        compoenentInstance!: {
-          nodeTitles: null;
-        };
-      }
-      let sampleStoryBackendObject = {
-        id: 'sample_story_id',
-        title: 'Story title',
-        description: 'Story description',
-        notes: 'Story notes',
-        version: 1,
-        corresponding_topic_id: 'topic_id',
-        story_contents: {
-          initial_node_id: 'node_1',
-          nodes: [
-            {
-              id: 'node_1',
-              title: 'Title 1',
-              description: 'Description 1',
-              prerequisite_skill_ids: ['skill_1'],
-              acquired_skill_ids: ['skill_2'],
-              destination_node_ids: [],
-              outline: 'Outline',
-              exploration_id: 'exp_id',
-              outline_is_finalized: false,
-              thumbnail_filename: 'fileName',
-              thumbnail_bg_color: 'blue',
-            }],
-          next_node_id: 'node_1'
-        },
-        language_code: 'en',
-        thumbnail_filename: 'fileName',
-        thumbnail_bg_color: 'blue',
-        url_fragment: 'url',
-        meta_tag_content: 'meta'
+    component.createNode();
+
+    expect(modalSpy).toHaveBeenCalled();
+  });
+
+  it('should call storyUpdateService to add destination node id', fakeAsync(() => {
+    class MockComponentInstance {
+      compoenentInstance!: {
+        nodeTitles: null;
       };
-      spyOn(component, '_initEditor').and.stub();
-      component.story = Story.createFromBackendDict(
-        sampleStoryBackendObject);
-      let modalSpy = spyOn(ngbModal, 'open').and.callFake(() => {
-        return ({
-          componentInstance: MockComponentInstance,
-          result: Promise.resolve()
-        }) as NgbModalRef;
-      });
-
-      component.createNode();
-      tick();
-
-      expect(modalSpy).toHaveBeenCalled();
-    }));
-
-  it('should call storyUpdateService to add destination node id',
-    fakeAsync(() => {
-      class MockComponentInstance {
-        compoenentInstance!: {
-          nodeTitles: null;
-        };
-      }
-      let storySpy = spyOn(storyUpdateService, 'addDestinationNodeIdToNode');
-      let modalSpy = spyOn(ngbModal, 'open').and.returnValue({
+    }
+    let sampleStoryBackendObject = {
+      id: 'sample_story_id',
+      title: 'Story title',
+      description: 'Story description',
+      notes: 'Story notes',
+      version: 1,
+      corresponding_topic_id: 'topic_id',
+      story_contents: {
+        initial_node_id: 'node_1',
+        nodes: [
+          {
+            id: 'node_1',
+            title: 'Title 1',
+            description: 'Description 1',
+            prerequisite_skill_ids: ['skill_1'],
+            acquired_skill_ids: ['skill_2'],
+            destination_node_ids: [],
+            outline: 'Outline',
+            exploration_id: 'exp_id',
+            outline_is_finalized: false,
+            thumbnail_filename: 'fileName',
+            thumbnail_bg_color: 'blue',
+          },
+        ],
+        next_node_id: 'node_1',
+      },
+      language_code: 'en',
+      thumbnail_filename: 'fileName',
+      thumbnail_bg_color: 'blue',
+      url_fragment: 'url',
+      meta_tag_content: 'meta',
+    };
+    spyOn(component, '_initEditor').and.stub();
+    component.story = Story.createFromBackendDict(sampleStoryBackendObject);
+    let modalSpy = spyOn(ngbModal, 'open').and.callFake(() => {
+      return {
         componentInstance: MockComponentInstance,
-        result: Promise.resolve()
-      } as NgbModalRef);
+        result: Promise.resolve(),
+      } as NgbModalRef;
+    });
 
-      component.createNode();
-      tick();
+    component.createNode();
+    tick();
 
-      expect(modalSpy).toHaveBeenCalled();
-      expect(storySpy).toHaveBeenCalled();
-    }));
+    expect(modalSpy).toHaveBeenCalled();
+  }));
+
+  it('should call storyUpdateService to add destination node id', fakeAsync(() => {
+    class MockComponentInstance {
+      compoenentInstance!: {
+        nodeTitles: null;
+      };
+    }
+    let storySpy = spyOn(storyUpdateService, 'addDestinationNodeIdToNode');
+    let modalSpy = spyOn(ngbModal, 'open').and.returnValue({
+      componentInstance: MockComponentInstance,
+      result: Promise.resolve(),
+    } as NgbModalRef);
+
+    component.createNode();
+    tick();
+
+    expect(modalSpy).toHaveBeenCalled();
+    expect(storySpy).toHaveBeenCalled();
+  }));
 
   it('should call storyUpdateService to update story notes', () => {
     let storyUpdateSpy = spyOn(storyUpdateService, 'setStoryNotes');
@@ -580,11 +594,30 @@ describe('Story Editor Component having three story nodes', () => {
     expect(component.storyUrlFragmentExists).toEqual(false);
   });
 
+  it(
+    'should not call the getStoryWithUrlFragmentExists if url fragment' +
+      'is not correct',
+    () => {
+      let storyUrlFragmentSpy = spyOn(
+        storyUpdateService,
+        'setStoryUrlFragment'
+      );
+      spyOn(
+        storyEditorStateService,
+        'updateExistenceOfStoryUrlFragment'
+      ).and.callFake((newUrlFragment, successCallback, errorCallback) =>
+        errorCallback()
+      );
+      component.updateStoryUrlFragment('story-url fragment');
+      expect(storyUrlFragmentSpy).not.toHaveBeenCalled();
+    }
+  );
+
   it('should update the existence of story url fragment', () => {
     let storyUpdateSpy = spyOn(
       storyEditorStateService,
-      'updateExistenceOfStoryUrlFragment').and.callFake(
-      (urlFragment, callback) => callback());
+      'updateExistenceOfStoryUrlFragment'
+    ).and.callFake((urlFragment, callback) => callback());
 
     component.updateStoryUrlFragment('story_second');
 
@@ -592,23 +625,23 @@ describe('Story Editor Component having three story nodes', () => {
   });
 
   it('should set story url fragment', () => {
-    let storyUpdateSpy = spyOn(
-      storyUpdateService, 'setStoryUrlFragment');
+    let storyUpdateSpy = spyOn(storyUpdateService, 'setStoryUrlFragment');
 
     component.updateStoryUrlFragment('');
 
     expect(storyUpdateSpy).toHaveBeenCalled();
   });
 
-  it('should call storyEditorNavigationService to navigate to chapters',
-    () => {
-      let navigationSpy = spyOn(
-        storyEditorNavigationService, 'navigateToChapterEditorWithId');
+  it('should call storyEditorNavigationService to navigate to chapters', () => {
+    let navigationSpy = spyOn(
+      storyEditorNavigationService,
+      'navigateToChapterEditorWithId'
+    );
 
-      component.navigateToChapterWithId('chapter_1', 0);
+    component.navigateToChapterWithId('chapter_1', 0);
 
-      expect(navigationSpy).toHaveBeenCalled();
-    });
+    expect(navigationSpy).toHaveBeenCalled();
+  });
 
   it('should make story description status', () => {
     component.editableDescriptionIsEmpty = true;
@@ -619,8 +652,7 @@ describe('Story Editor Component having three story nodes', () => {
   });
 
   it('should update the story description', () => {
-    let storyUpdateSpy = spyOn(
-      storyUpdateService, 'setStoryDescription');
+    let storyUpdateSpy = spyOn(storyUpdateService, 'setStoryDescription');
 
     component.updateStoryDescription('New skill description');
 
@@ -630,10 +662,10 @@ describe('Story Editor Component having three story nodes', () => {
   it('should show modal if there are unsaved changes on leaving', () => {
     spyOn(undoRedoService, 'getChangeCount').and.returnValue(10);
     const modalSpy = spyOn(ngbModal, 'open').and.callFake((dlg, opt) => {
-      return ({
+      return {
         componentInstance: MockNgbModalRef,
-        result: Promise.resolve()
-      }) as NgbModalRef;
+        result: Promise.resolve(),
+      } as NgbModalRef;
     });
 
     component.returnToTopicEditorPage();
@@ -641,24 +673,23 @@ describe('Story Editor Component having three story nodes', () => {
     expect(modalSpy).toHaveBeenCalled();
   });
 
-  it('should show modal if there are unsaved changes and click reject',
-    () => {
-      spyOn(undoRedoService, 'getChangeCount').and.returnValue(10);
-      const modalSpy = spyOn(ngbModal, 'open').and.callFake((dlg, opt) => {
-        return ({
-          componentInstance: MockNgbModalRef,
-          result: Promise.reject()
-        }) as NgbModalRef;
-      });
-
-      component.returnToTopicEditorPage();
-      expect(modalSpy).toHaveBeenCalled();
+  it('should show modal if there are unsaved changes and click reject', () => {
+    spyOn(undoRedoService, 'getChangeCount').and.returnValue(10);
+    const modalSpy = spyOn(ngbModal, 'open').and.callFake((dlg, opt) => {
+      return {
+        componentInstance: MockNgbModalRef,
+        result: Promise.reject(),
+      } as NgbModalRef;
     });
+
+    component.returnToTopicEditorPage();
+    expect(modalSpy).toHaveBeenCalled();
+  });
 
   it('should call windowref to open a tab', () => {
     spyOn(undoRedoService, 'getChangeCount').and.returnValue(0);
     spyOnProperty(windowRef, 'nativeWindow').and.returnValue({
-      open: jasmine.createSpy('open', () => {})
+      open: jasmine.createSpy('open', () => {}),
     });
 
     component.returnToTopicEditorPage();
@@ -668,10 +699,14 @@ describe('Story Editor Component having three story nodes', () => {
 
   it('should fetch story when story is initialized', () => {
     let mockEventEmitter = new EventEmitter();
-    spyOnProperty(storyEditorStateService, 'onStoryInitialized')
-      .and.returnValue(mockEventEmitter);
+    spyOnProperty(
+      storyEditorStateService,
+      'onStoryInitialized'
+    ).and.returnValue(mockEventEmitter);
     let updatePublishUptoChapterSelectionSpy = spyOn(
-      component, 'updatePublishUptoChapterSelection');
+      component,
+      'updatePublishUptoChapterSelection'
+    );
 
     component.ngOnInit();
     mockEventEmitter.emit();
@@ -682,8 +717,10 @@ describe('Story Editor Component having three story nodes', () => {
 
   it('should fetch story when story is reinitialized', () => {
     let mockEventEmitter = new EventEmitter();
-    spyOnProperty(storyEditorStateService, 'onStoryReinitialized')
-      .and.returnValue(mockEventEmitter);
+    spyOnProperty(
+      storyEditorStateService,
+      'onStoryReinitialized'
+    ).and.returnValue(mockEventEmitter);
 
     component.ngOnInit();
     mockEventEmitter.emit();
@@ -693,8 +730,10 @@ describe('Story Editor Component having three story nodes', () => {
 
   it('should fetch story node when story editor is opened', () => {
     let mockEventEmitter = new EventEmitter();
-    spyOnProperty(storyEditorStateService, 'onViewStoryNodeEditor')
-      .and.returnValue(mockEventEmitter);
+    spyOnProperty(
+      storyEditorStateService,
+      'onViewStoryNodeEditor'
+    ).and.returnValue(mockEventEmitter);
 
     component.ngOnInit();
     mockEventEmitter.emit();
@@ -704,11 +743,17 @@ describe('Story Editor Component having three story nodes', () => {
 
   it('should update publish upto dropdown chapter selection', () => {
     let selectChapterSpy = spyOn(
-      storyEditorStateService, 'setSelectedChapterIndexInPublishUptoDropdown');
+      storyEditorStateService,
+      'setSelectedChapterIndexInPublishUptoDropdown'
+    );
     let chaptersAreBeingPublishedSpy = spyOn(
-      storyEditorStateService, 'setChaptersAreBeingPublished');
+      storyEditorStateService,
+      'setChaptersAreBeingPublished'
+    );
     let newChapterPublicationIsDisabledSpy = spyOn(
-      storyEditorStateService, 'setNewChapterPublicationIsDisabled');
+      storyEditorStateService,
+      'setNewChapterPublicationIsDisabled'
+    );
 
     component.updatePublishUptoChapterSelection(1);
     expect(selectChapterSpy).toHaveBeenCalledWith(1);
@@ -735,5 +780,15 @@ describe('Story Editor Component having three story nodes', () => {
     expect(selectChapterSpy).toHaveBeenCalled();
     expect(chaptersAreBeingPublishedSpy).toHaveBeenCalledWith(true);
     expect(newChapterPublicationIsDisabledSpy).toHaveBeenCalledWith(true);
+  });
+
+  it('should update editableUrlFragment and call updateStoryUrlFragment', () => {
+    spyOn(component, 'updateStoryUrlFragment');
+    const newUrlFragment = 'new-story-url';
+    component.onStoryEditorUrlFragmentChange(newUrlFragment);
+    expect(component.editableUrlFragment).toBe(newUrlFragment);
+    expect(component.updateStoryUrlFragment).toHaveBeenCalledWith(
+      newUrlFragment
+    );
   });
 });
